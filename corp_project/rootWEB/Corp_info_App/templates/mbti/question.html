@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTI 테스트</title>
+</head>
+<body>
+    <div id="question">
+        <p>{{ question }}</p>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="answer" value="A" id="answerA">
+            <label class="form-check-label" for="answerA">
+                {{ options.A }}
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="answer" value="B" id="answerB">
+            <label class="form-check-label" for="answerB">
+                {{ options.B }}
+            </label>
+        </div>
+        <button id="next-btn" class="btn btn-primary mt-3">다음</button>
+    </div>
+
+    <div id="result" class="d-none">
+        <p>당신의 MBTI 유형은 <strong>{{ mbti_type }}</strong>입니다.</p>
+        <p>{{ desc }}</p>
+        <p>추천 직업: {{ job }}</p>
+        <button id="restart-btn" class="btn btn-primary mt-3">다시 시작</button>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(() => {
+            $("#question").on("click", "#next-btn", () => {
+                const answer = document.querySelector(`input[name="answer"]:checked`);
+                if (answer) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/handle_answer/",
+                        data: {
+                            'csrfmiddlewaretoken': '{{ csrf_token }}',
+                            'answer': answer.value,
+                        },
+                        dataType: "html",
+                        success: function (data) {
+                            $("#question").html(data);
+                        },
+                        error: function () {
+                            alert("답변을 처리하는 동안 오류가 발생했습니다.");
+                        }
+                    });
+                }
+            });
+
+            $("#result").on("click", "#restart-btn", () => {
+                $.ajax({
+                    type: "GET",
+                    url: "/restart_test/",
+                    dataType: "html",
+                    success: function (data) {
+                        $("#question").html(data);
+                        $("#result").addClass("d-none");
+                    },
+                    error: function () {
+                        alert("테스트를 다시 시작하는 동안 오류가 발생했습니다.");
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

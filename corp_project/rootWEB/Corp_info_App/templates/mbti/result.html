@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTI 결과</title>
+</head>
+<body>
+    <div id="result">
+        <p>당신의 MBTI 유형은 <strong>{{ mbti_type }}</strong>입니다.</p>
+        <p>{{ desc }}</p>
+        <p>추천 직업: {{ job }}</p>
+        <button id="restart-btn" class="btn btn-primary mt-3">다시 시작</button>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(() => {
+            $("#result").on("click", "#restart-btn", () => {
+                $.ajax({
+                    type: "GET",
+                    url: "/restart_test/",
+                    dataType: "html",
+                    success: function (data) {
+                        $("#question").html(data);
+                        $("#result").addClass("d-none");
+                    },
+                    error: function () {
+                        alert("테스트를 다시 시작하는 동안 오류가 발생했습니다.");
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
